@@ -1,11 +1,12 @@
 package com.kazan.wrapper;
 
+import com.fasterxml.jackson.annotation.JsonSetter;
+
 public class AuthorizationHeaderWrapper {
 	private String sub;
 	private Boolean email_verified;
 	private String iss;
 	private String phone_number_verified;
-	private String cognito_username;
 	private String aud;
 	private String event_id;
 	private String token_use;
@@ -39,12 +40,6 @@ public class AuthorizationHeaderWrapper {
 	}
 	public void setPhone_number_verified(String phone_number_verified) {
 		this.phone_number_verified = phone_number_verified;
-	}
-	public String getCognito_username() {
-		return cognito_username;
-	}
-	public void setCognito_username(String cognito_username) {
-		this.cognito_username = cognito_username;
 	}
 	public String getAud() {
 		return aud;
@@ -103,6 +98,7 @@ public class AuthorizationHeaderWrapper {
 	public String getUsername() {
 		return username;
 	}
+	@JsonSetter("cognito:username")
 	public void setUsername(String username) {
 		this.username = username;
 	}

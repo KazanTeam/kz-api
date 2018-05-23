@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -31,6 +32,7 @@ import com.kazan.repository.UserGroupRoleRepository;
 import com.kazan.repository.UserRepository;
 import com.kazan.wrapper.AlertRequestWrapper;
 import com.kazan.wrapper.AuthorizationHeaderWrapper;
+import com.kazan.wrapper.NewGroupRequestWrapper;
 import com.kazan.wrapper.ObjectRequestWrapper;
 
 @RestController    
@@ -337,23 +339,15 @@ public class KazanController {
 	
 
 	@RequestMapping(method=RequestMethod.GET, path="/api/users/groups")
-	public @ResponseBody ResponseEntity<String> getAllGroupsByUser(@RequestHeader("Authorization") String authorizationHeader) {
-		
-        System.out.println("------------ Decode JWT GET /api/users/groups ------------");
+	public @ResponseBody ResponseEntity<String> getAllGroupsByUser(@RequestHeader("Authorization") String authorizationHeader) {		
         String[] split_string = authorizationHeader.split("\\.");
         String base64EncodedHeader = split_string[0];
         String base64EncodedBody = split_string[1];
         String base64EncodedSignature = split_string[2];
         Base64 base64Url = new Base64(true);
 
-        System.out.println("~~~~~~~~~ JWT Header ~~~~~~~");
         String header = new String(base64Url.decode(base64EncodedHeader));
-        System.out.println("JWT Header : " + header);
-
-        System.out.println("~~~~~~~~~ JWT Body ~~~~~~~");
         String body = new String(base64Url.decode(base64EncodedBody));
-        System.out.println("JWT Body : "+body);        
-        body = body.replace("cognito:username", "cognito_username");
 
 		ObjectMapper mapper = new ObjectMapper();
 		AuthorizationHeaderWrapper authorizationHeaderWrapper = null;
@@ -367,12 +361,7 @@ public class KazanController {
 		int userId = userRepository.getIdByUsername(authorizationHeaderWrapper.getUsername());
 
 		if (-1 == userId) {
-			try {
-				return new ResponseEntity<String>(mapper.writeValueAsString(groupRepository.getAll()), HttpStatus.ACCEPTED);
-			} catch (JsonProcessingException e) {
-				System.out.println("KazanController.getAllGroupsByUser -1:" + e);
-				return new ResponseEntity<String>("Cannot get groups!", HttpStatus.UNAUTHORIZED);
-			}
+			return new ResponseEntity<String>("Username not found!", HttpStatus.UNAUTHORIZED);
 		}
 		else {
 			try {
@@ -380,6 +369,55 @@ public class KazanController {
 			} catch (JsonProcessingException e) {
 				System.out.println("KazanController.getAllGroupsByUser:" + e);
 				return new ResponseEntity<String>("Cannot get groups!", HttpStatus.UNAUTHORIZED);
+			}
+		}
+	}
+	
+	@RequestMapping(method=RequestMethod.POST, path="/api/groups")
+	public @ResponseBody ResponseEntity<String> createNewGroupForUser(@RequestHeader("Authorization") String authorizationHeader, @RequestBody NewGroupRequestWrapper newGroupRequestWrapper) {
+		if (null == newGroupRequestWrapper.getRoleId()) {
+			return new ResponseEntity<String>("Missing roleId!", HttpStatus.UNAUTHORIZED);
+		}
+		
+        String[] split_string = authorizationHeader.split("\\.");
+        String base64EncodedHeader = split_string[0];
+        String base64EncodedBody = split_string[1];
+        String base64EncodedSignature = split_string[2];
+        Base64 base64Url = new Base64(true);
+
+        String header = new String(base64Url.decode(base64EncodedHeader));
+        String body = new String(base64Url.decode(base64EncodedBody));
+
+		ObjectMapper mapper = new ObjectMapper();
+		AuthorizationHeaderWrapper authorizationHeaderWrapper = null;
+		try {
+			authorizationHeaderWrapper = mapper.readValue(body, AuthorizationHeaderWrapper.class);
+		} catch (IOException e) {
+			System.out.println("KazanController.createNewGroupForUser:" + e);
+			return new ResponseEntity<String>("Cannot read header!", HttpStatus.UNAUTHORIZED);
+		}
+		
+		int userId = userRepository.getIdByUsername(authorizationHeaderWrapper.getUsername());
+
+		if (-1 == userId) {
+			return new ResponseEntity<String>("Username not found!", HttpStatus.UNAUTHORIZED);
+		}
+		else {
+			try {
+				KazanGroup kazanGroup = new KazanGroup();
+				kazanGroup.setGroupName(authorizationHeaderWrapper.getUsername() + " created at " + new Date().getTime());
+				int groupId = ugrRepository.add(kazanGroup, userId, newGroupRequestWrapper.getRoleId());
+				if (-1 == groupId) {
+					return new ResponseEntity<String>("Cannot create group!", HttpStatus.UNAUTHORIZED);
+				} else {
+					return new ResponseEntity<String>(mapper.writeValueAsString(kazanGroup), HttpStatus.ACCEPTED);
+				}					
+			} catch (JsonProcessingException e) {
+				System.out.println("KazanController.createNewGroupForUser:" + e);
+				return new ResponseEntity<String>("Cannot parse the created group!", HttpStatus.UNAUTHORIZED);
+			} catch (Exception e) {
+				System.out.println("KazanController.createNewGroupForUser:" + e);
+				return new ResponseEntity<String>("Error in creating new group process!", HttpStatus.UNAUTHORIZED);
 			}
 		}
 	}

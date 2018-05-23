@@ -36,6 +36,8 @@ public class GroupRepository {
 	
 	@Transactional
 	public List<KazanGroup> getGroupByIdList(List<Integer> groupIds) {
+		if (null == groupIds || 0 == groupIds.size())
+			return new ArrayList<KazanGroup>();
 		try {
 			Query query = sessionFactory.getCurrentSession().createQuery("from KazanGroup where group_id in (:groupIdListToSelect)");
 			query.setParameterList("groupIdListToSelect", groupIds);
@@ -58,5 +60,12 @@ public class GroupRepository {
 			System.out.println("GroupRepository.getAll:" + e);
 			return new ArrayList<KazanGroup>();
 		}
+	}
+	
+	@Transactional
+	public KazanGroup add(KazanGroup kazanGroup) {
+		sessionFactory.getCurrentSession().persist(kazanGroup);
+		sessionFactory.getCurrentSession().flush();
+		return kazanGroup;
 	}
 }

@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.kazan.model.KazanGroup;
 import com.kazan.model.UserGroupRole;
 
 @Repository
@@ -124,5 +125,25 @@ public class UserGroupRoleRepository {
 			System.out.println("UserGroupRoleRepository.getUserIdByGroupIdAndMode:" + e);
 			return new ArrayList<Integer>();
 		}
+	}
+	
+	@Transactional
+	public UserGroupRole add(UserGroupRole userGroupRole) {
+		sessionFactory.getCurrentSession().persist(userGroupRole);
+		sessionFactory.getCurrentSession().flush();
+		return userGroupRole;		
+	}
+	
+	// add new KazanGroup and new UserGroupRole
+	@Transactional
+	public int add(KazanGroup kazanGroup, int userId, int roleId) {
+		int groupId = (Integer) sessionFactory.getCurrentSession().save(kazanGroup);
+		UserGroupRole userGroupRole = new UserGroupRole();
+		userGroupRole.setGroupId(kazanGroup.getGroupId());
+		userGroupRole.setUserId(userId);
+		userGroupRole.setRoleId(roleId);
+		sessionFactory.getCurrentSession().save(userGroupRole);
+		sessionFactory.getCurrentSession().flush();
+		return groupId;
 	}
 }
