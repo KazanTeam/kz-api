@@ -9,6 +9,7 @@ import org.apache.commons.codec.binary.Base64;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -86,6 +87,8 @@ public class KazanController {
 		if(checkSendMessagePermissionByRoleIdAndMode(roleId, 0)) return groupId;
 		return -1;
 	}
+	
+	@CrossOrigin
 	@RequestMapping(method=RequestMethod.POST, path="/object/syn")
 	public @ResponseBody ResponseEntity<String> synObject(@RequestBody ObjectRequestWrapper wrapperObject) {
 		int userId = userRepository.getIdByUsername(wrapperObject.getUsername());
@@ -233,6 +236,7 @@ public class KazanController {
 	}
 	//Remove duplicate Message list end
 	
+	@CrossOrigin
 	@RequestMapping(method=RequestMethod.POST, path="/object/get")
 	public @ResponseBody ResponseEntity<String> getObject(@RequestBody ObjectRequestWrapper wrapperObject) {
 		int userId = userRepository.getIdByUsername(wrapperObject.getUsername());
@@ -282,6 +286,7 @@ public class KazanController {
 		
 	}
 	
+	@CrossOrigin
 	@RequestMapping(method=RequestMethod.POST, path="/user/get")
 	public @ResponseBody ResponseEntity<String> userGet(@RequestBody ObjectRequestWrapper wrapperObject) {
 		//=============== sau nay phan nay se duoc config trong payment ====================
@@ -337,7 +342,7 @@ public class KazanController {
 		return false;
 	}
 	
-
+	@CrossOrigin
 	@RequestMapping(method=RequestMethod.GET, path="/api/users/groups")
 	public @ResponseBody ResponseEntity<String> getAllGroupsByUser(@RequestHeader("Authorization") String authorizationHeader) {		
         String[] split_string = authorizationHeader.split("\\.");
@@ -373,6 +378,7 @@ public class KazanController {
 		}
 	}
 	
+	@CrossOrigin
 	@RequestMapping(method=RequestMethod.POST, path="/api/groups")
 	public @ResponseBody ResponseEntity<String> createNewGroupForUser(@RequestHeader("Authorization") String authorizationHeader, @RequestBody NewGroupRequestWrapper newGroupRequestWrapper) {
 		if (null == newGroupRequestWrapper.getRoleId()) {
