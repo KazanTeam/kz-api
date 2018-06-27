@@ -45,10 +45,10 @@ public class KazanGroup {
 	private String notifyReTime;
 
 	@Column(name = "creater")
-	private String creater;
+	private Integer creator;
 
 	@Column(name = "group_private")
-	private String groupPrivate;
+	private Integer groupPrivate;
 
 	public Integer getGroupId() {
 		return groupId;
@@ -138,19 +138,19 @@ public class KazanGroup {
 		this.notifyReTime = notifyReTime;
 	}
 
-	public String getCreater() {
-		return creater;
+	public Integer getCreator() {
+		return creator;
 	}
 
-	public void setCreater(String creater) {
-		this.creater = creater;
+	public void setCreator(Integer creator) {
+		this.creator = creator;
 	}
 
-	public String getGroupPrivate() {
+	public Integer getGroupPrivate() {
 		return groupPrivate;
 	}
 
-	public void setGroupPrivate(String groupPrivate) {
+	public void setGroupPrivate(Integer groupPrivate) {
 		this.groupPrivate = groupPrivate;
 	}
 
@@ -177,7 +177,7 @@ public class KazanGroup {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((creater == null) ? 0 : creater.hashCode());
+		result = prime * result + ((creator == null) ? 0 : creator.hashCode());
 		result = prime * result + ((groupAlertBot == null) ? 0 : groupAlertBot.hashCode());
 		result = prime * result + ((groupId == null) ? 0 : groupId.hashCode());
 		result = prime * result + ((groupImage == null) ? 0 : groupImage.hashCode());
@@ -202,10 +202,10 @@ public class KazanGroup {
 		if (getClass() != obj.getClass())
 			return false;
 		KazanGroup other = (KazanGroup) obj;
-		if (creater == null) {
-			if (other.creater != null)
+		if (creator == null) {
+			if (other.creator != null)
 				return false;
-		} else if (!creater.equals(other.creater))
+		} else if (!creator.equals(other.creator))
 			return false;
 		if (groupAlertBot == null) {
 			if (other.groupAlertBot != null)

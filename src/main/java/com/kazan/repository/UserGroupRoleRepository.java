@@ -68,7 +68,7 @@ public class UserGroupRoleRepository {
 	}
 	
 	@Transactional
-	public int getByGroupIdUserId(int userId, int groupId) {
+	public int getByUserIdGroupId(int userId, int groupId) {
 		Query query = sessionFactory.getCurrentSession().createQuery("from UserGroupRole where userId = :userIdToSelect and groupId = :groupIdToSelect ");
 		query.setParameter("userIdToSelect", userId);
 		query.setParameter("groupIdToSelect", groupId);
@@ -85,6 +85,20 @@ public class UserGroupRoleRepository {
 			}
 		}
 		return -1;
+	}
+	
+	@Transactional
+	public int getRoleIdByUserIdGroupId(int userId, int groupId) {
+		Query query = sessionFactory.getCurrentSession().createQuery("from UserGroupRole where userId = :userIdToSelect and groupId = :groupIdToSelect ");
+		query.setParameter("userIdToSelect", userId);
+		query.setParameter("groupIdToSelect", groupId);
+		query.setMaxResults(1);
+		UserGroupRole result = (UserGroupRole) query.uniqueResult();
+		if (null == result)
+			return -1;
+		else {
+			return result.getRoleId();
+		}
 	}
 	
 	@Transactional
@@ -133,6 +147,12 @@ public class UserGroupRoleRepository {
 		sessionFactory.getCurrentSession().flush();
 		return userGroupRole;		
 	}
+
+	@Transactional
+	public UserGroupRole update(UserGroupRole userGroupRole) {
+		sessionFactory.getCurrentSession().merge(userGroupRole);
+		return userGroupRole;
+	}
 	
 	// add new KazanGroup and new UserGroupRole
 	@Transactional
@@ -145,5 +165,29 @@ public class UserGroupRoleRepository {
 		sessionFactory.getCurrentSession().save(userGroupRole);
 		sessionFactory.getCurrentSession().flush();
 		return groupId;
+	}
+	
+	// add new KazanGroup and new UserGroupRole
+	@Transactional
+	public int add(KazanGroup kazanGroup) {
+		int groupId = (Integer) sessionFactory.getCurrentSession().save(kazanGroup);
+		UserGroupRole userGroupRole = new UserGroupRole();
+		userGroupRole.setGroupId(kazanGroup.getGroupId());
+		userGroupRole.setUserId(kazanGroup.getCreator());
+		userGroupRole.setRoleId(1);
+		userGroupRole.setGroupAlias(kazanGroup.getGroupName());
+		userGroupRole.setExpiryDate(new Date());
+		userGroupRole.setActive(1);
+		sessionFactory.getCurrentSession().save(userGroupRole);
+		sessionFactory.getCurrentSession().flush();
+		return groupId;
+	}
+	
+	@Transactional
+	public int removeUserFromGroup(int userId, int groupId) {
+		String hql = "delete from KazanGroup where user_id=:userIdToDelete and group_id=:groupIdToDelete";
+		return sessionFactory.getCurrentSession().createQuery(hql)
+				.setInteger("userIdToDelete", userId).setInteger("groupIdToDelete", groupId)
+				.executeUpdate();		
 	}
 }

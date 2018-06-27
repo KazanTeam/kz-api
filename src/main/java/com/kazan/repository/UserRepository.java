@@ -8,11 +8,31 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.kazan.model.KazanUser;
 
+import vn.vnptnet.oss.model.entity.Province;
+
 @Repository
 public class UserRepository {
 	
 	@Autowired
 	private SessionFactory sessionFactory;
+	
+	@Transactional
+	public KazanUser add(KazanUser kazanUser) {
+		sessionFactory.getCurrentSession().persist(kazanUser);
+		sessionFactory.getCurrentSession().flush();
+		return kazanUser;		
+	}
+
+	@Transactional
+	public KazanUser update(KazanUser kazanUser) {
+		sessionFactory.getCurrentSession().merge(kazanUser);
+		return kazanUser;
+	}
+	
+	@Transactional
+	public KazanUser getById(Integer id) {
+		return (KazanUser) sessionFactory.getCurrentSession().get(KazanUser.class, id);
+	}
 	
 	@Transactional
 	public int getIdByUsername(String username) {
@@ -23,8 +43,7 @@ public class UserRepository {
 			return -1;
 		else
 			return result.getUserId();
-	}
-	
+	}	
 	
 	@Transactional
 	public KazanUser geByUsername(String username) {

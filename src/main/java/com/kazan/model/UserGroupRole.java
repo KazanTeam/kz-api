@@ -40,6 +40,17 @@ public class UserGroupRole implements Serializable {
 	@Column(name = "expiry_date")
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date expiryDate;
+	
+	@Column(name="active")
+	private Integer active;
+
+	public Integer getActive() {
+		return active;
+	}
+
+	public void setActive(Integer active) {
+		this.active = active;
+	}
 
 	public Integer getUserId() {
 		return userId;

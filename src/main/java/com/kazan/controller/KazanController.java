@@ -14,40 +14,35 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kazan.component.TelegramSender;
-import com.kazan.model.BaseObject;
 import com.kazan.model.KazanGroup;
+import com.kazan.model.KazanObject;
+import com.kazan.model.KazanUser;
 import com.kazan.model.Message;
-import com.kazan.model.ObjectAlert;
-import com.kazan.model.ObjectMaster;
-import com.kazan.model.ObjectNormal;
-import com.kazan.repository.AbstractObjectRepository;
+import com.kazan.model.UserGroupRole;
 import com.kazan.repository.GroupRepository;
+import com.kazan.repository.KazanObjectRepository;
 import com.kazan.repository.UserGroupRoleRepository;
 import com.kazan.repository.UserRepository;
 import com.kazan.wrapper.AlertRequestWrapper;
 import com.kazan.wrapper.AuthorizationHeaderWrapper;
 import com.kazan.wrapper.NewGroupRequestWrapper;
 import com.kazan.wrapper.ObjectRequestWrapper;
+import com.kazan.wrapper.UserAndGroupWrapper;
+
+import ch.qos.logback.core.joran.conditional.ElseAction;
 
 @RestController    
 @RequestMapping(path="/kazan")
 public class KazanController {
 	
 	@Autowired
-	private AbstractObjectRepository<ObjectNormal> objectNormalRepository;
-	
-	@Autowired
-	private AbstractObjectRepository<ObjectMaster>  objectMasterRepository;
-	
-	@Autowired
-	private AbstractObjectRepository<ObjectAlert>  objectAlertRepository;	
+	private KazanObjectRepository kazanObjectRepository;
 	
 	@Autowired
 	private UserRepository userRepository;
@@ -83,7 +78,7 @@ public class KazanController {
 	private int checkMessagePermission(String groupAliase,int userId) {
 		int groupId = ugrRepository.getGroupIdByGroupAlias(userId, groupAliase);
 		if (-1 == groupId) return -1;
-		int roleId = ugrRepository.getByGroupIdUserId(userId, groupId); 
+		int roleId = ugrRepository.getByUserIdGroupId(userId, groupId); 
 		if(checkSendMessagePermissionByRoleIdAndMode(roleId, 0)) return groupId;
 		return -1;
 	}
@@ -120,18 +115,14 @@ public class KazanController {
 		return new ResponseEntity<String>("Object list synchronized!", HttpStatus.ACCEPTED);
 	}
 	
-	private int synObject(String groupAliase,int userId, String symbol, int mode, List<BaseObject> objects) {
+	private int synObject(String groupAliase,int userId, String symbol, int mode, List<KazanObject> objects) {
 		int groupId = ugrRepository.getGroupIdByGroupAlias(userId, groupAliase);
 		if (-1 == groupId) return -1;
 		int roleId = ugrRepository.getByGroupIdUserIdSymbol(userId, groupId, symbol); 
 		if(checkPushPermissionByRoleIdAndMode(roleId, mode)) {
 			try {
-				if(mode==3) {
-					objectNormalRepository.deleteBySymbolUserGroup(symbol, userId, groupId);
-				} else if(mode==2) {
-					objectMasterRepository.deleteBySymbolGroup(symbol, groupId);
-				} else if(mode==4 || mode==5) {
-					objectAlertRepository.deleteBySymbolGroup(symbol, groupId);
+				if (2 <= mode && mode <= 5) {
+					kazanObjectRepository.deleteBySymbolUserGroupMode(symbol, userId, groupId, mode);
 				}
 			} catch(Exception e) {
 				System.out.println("KazanController.synObject:" + e);
@@ -139,18 +130,13 @@ public class KazanController {
 			}
 			if (objects != null && !objects.isEmpty()) {
 				Date objectUdatedDate = new Date();
-				for (BaseObject ko : objects) {
+				for (KazanObject ko : objects) {
 					ko.setSymbol(symbol);
 					ko.setUserId(userId);
 					ko.setGroupId(groupId);
 					ko.setUpdated_date(objectUdatedDate);
-					if(mode==3) {
-						objectNormalRepository.add(new ObjectNormal(ko));	
-					} else if(mode==2) {
-						objectMasterRepository.add(new ObjectMaster(ko));
-					} else if(mode==4 || mode==5) {
-						objectAlertRepository.add(new ObjectAlert(ko));
-					}
+					ko.setModeId(mode);
+					kazanObjectRepository.add(ko);
 				}
 			}
 			return groupId;
@@ -260,18 +246,17 @@ public class KazanController {
 				if(! "".equalsIgnoreCase(wrapperObject.getGetFromUser()) && wrapperObject.getMode()==3) {
 					getFromUserId = userRepository.getIdByUsername(wrapperObject.getGetFromUser());
 				}
+				int mode_id = wrapperObject.getMode();
 				if(-1 == getFromUserId) {
-					String[][] userUpdate = objectNormalRepository.getUserIdAndUpdateTime(wrapperObject.getSymbol(), groupId);
-					if (userUpdate.length > 0 && userUpdate[0].length > 0)
-						getFromUserId = userRepository.getIdByUsername(userUpdate[0][0]);
+					String[][] userUpdate = kazanObjectRepository.getUserIdAndUpdateTime(wrapperObject.getSymbol(), groupId);
+					if (userUpdate.length > 0 && userUpdate[0].length > 0){
+ 						getFromUserId = userRepository.getIdByUsername(userUpdate[0][0]);
+						mode_id = Integer.parseInt(userUpdate[0][1]); // lay userId và mode cua user cuoi cung
+					}
 				}
 				
-				if(wrapperObject.getMode()==3) {
-					return new ResponseEntity<String>(mapper.writeValueAsString(objectNormalRepository.getBySymbolUserGroup(wrapperObject.getSymbol(), getFromUserId, groupId)), HttpStatus.ACCEPTED);
-				} else if(wrapperObject.getMode()==2) {
-					return new ResponseEntity<String>(mapper.writeValueAsString(objectMasterRepository.getBySymbolGroup(wrapperObject.getSymbol(), getFromUserId, groupId)), HttpStatus.ACCEPTED);
-				} else if(wrapperObject.getMode()==4 || wrapperObject.getMode()==5) {
-					return new ResponseEntity<String>(mapper.writeValueAsString(objectAlertRepository.getBySymbolGroup(wrapperObject.getSymbol(), getFromUserId, groupId)), HttpStatus.ACCEPTED);
+				if(2 <= wrapperObject.getMode() && wrapperObject.getMode() <= 4) {
+					return new ResponseEntity<String>(mapper.writeValueAsString(kazanObjectRepository.getBySymbolUserGroup(wrapperObject.getSymbol(), getFromUserId, groupId)), HttpStatus.ACCEPTED);
 				} else {
 					return new ResponseEntity<String>("Invalid mode!", HttpStatus.UNAUTHORIZED);
 				}
@@ -304,14 +289,12 @@ public class KazanController {
 		}
 		int roleId = ugrRepository.getByGroupIdUserIdSymbol(userId, groupId, wrapperObject.getSymbol()); 
 		int mode = wrapperObject.getMode();
-		if(checkUserGetPermissionByRoleIdAndMode(roleId, mode)) {
+		if(checkUserGetPermissionByRoleId(roleId)) {
 			ObjectMapper mapper = new ObjectMapper();
 			try {
 				String[][] userObjects = null;
-				if (3 == mode)
-					userObjects  = objectNormalRepository.getUserIdAndUpdateTime(wrapperObject.getSymbol(), groupId);
-				else if (2 == mode)
-					userObjects  = objectMasterRepository.getUserIdAndUpdateTime(wrapperObject.getSymbol(), groupId);
+				if (2 == mode || 3 == mode)
+					userObjects  = kazanObjectRepository.getUserIdAndUpdateTime(wrapperObject.getSymbol(), groupId);
 				return new ResponseEntity<String>(mapper.writeValueAsString(userObjects), HttpStatus.ACCEPTED);
 			} catch (JsonProcessingException e) {
 				System.out.println("KazanController.getObject:" + e);
@@ -337,7 +320,7 @@ public class KazanController {
 		if(roleId==2) return true;
 		return false;
 	}
-	boolean checkUserGetPermissionByRoleIdAndMode(int roleId, int mode) {
+	boolean checkUserGetPermissionByRoleId(int roleId) {
 		if(roleId==2 || roleId==3) return true;
 		return false;
 	}
@@ -427,4 +410,121 @@ public class KazanController {
 			}
 		}
 	}
+	
+	// API 1
+	@CrossOrigin
+	@RequestMapping(method=RequestMethod.POST, path="/user/add")
+	public @ResponseBody ResponseEntity<String> createUser(@RequestHeader("Authorization") String authorizationHeader, @RequestBody KazanUser kazanUser) {
+		kazanUser.setUserId(null);
+		userRepository.add(kazanUser);
+		return new ResponseEntity<String>("User added successfully!", HttpStatus.ACCEPTED);
+	}
+	
+	// API 2
+	@CrossOrigin
+	@RequestMapping(method=RequestMethod.POST, path="/user/edit")
+	public @ResponseBody ResponseEntity<String> editUser(@RequestHeader("Authorization") String authorizationHeader, @RequestBody KazanUser kazanUser) {
+		if (null == kazanUser.getUserId()) {
+			return new ResponseEntity<String>("No userId!!!", HttpStatus.UNAUTHORIZED);
+		} else {
+			if (null == userRepository.getById(kazanUser.getUserId())) {
+				return new ResponseEntity<String>("No such user!!!", HttpStatus.UNAUTHORIZED);
+			} else {
+				userRepository.update(kazanUser);
+				return new ResponseEntity<String>("User edited successfully!", HttpStatus.ACCEPTED);
+			}
+		}
+	}
+	
+	// API 3
+	@CrossOrigin
+	@RequestMapping(method=RequestMethod.POST, path="/group/userleave")
+	public @ResponseBody ResponseEntity<String> leaveGroup(@RequestHeader("Authorization") String authorizationHeader, @RequestBody UserAndGroupWrapper userAndGroupWrapper) {
+		int creator = groupRepository.getCreatorByGroupId(userAndGroupWrapper.getGroupId());
+		if (-1 == creator) {
+			return new ResponseEntity<String>("This group has no creator!!!", HttpStatus.UNAUTHORIZED);
+		} else if (userAndGroupWrapper.getUserId().equals(creator)) {
+			return new ResponseEntity<String>("Creator cannot leave group!!!", HttpStatus.UNAUTHORIZED);
+		} else {
+			int deletedRecord = ugrRepository.removeUserFromGroup(userAndGroupWrapper.getUserId(), userAndGroupWrapper.getGroupId());
+			if (0 < deletedRecord)
+				return new ResponseEntity<String>("User left group successfully!", HttpStatus.UNAUTHORIZED);
+			else 
+				return new ResponseEntity<String>("No user left group!!!", HttpStatus.UNAUTHORIZED);
+		}
+	}	
+	
+	// API 4
+	@CrossOrigin
+	@RequestMapping(method=RequestMethod.POST, path="/group/create")
+	public @ResponseBody ResponseEntity<String> createGroup(@RequestHeader("Authorization") String authorizationHeader, @RequestBody KazanGroup kazanGroup) {		
+		try {
+			kazanGroup.setGroupId(null);
+			kazanGroup.setGroupPrivate(1);
+			int groupId = ugrRepository.add(kazanGroup);
+			if (-1 == groupId) {
+				return new ResponseEntity<String>("Cannot create group!", HttpStatus.UNAUTHORIZED);
+			} else {
+				return new ResponseEntity<String>("Group created successfully!", HttpStatus.ACCEPTED);
+			}					
+		} catch (Exception e) {
+			System.out.println("KazanController.createNewGroupForUser:" + e);
+			return new ResponseEntity<String>("Error in creating new group process!", HttpStatus.UNAUTHORIZED);
+		}
+	}	
+	
+	// API 6, 7, 8 - first part
+	@CrossOrigin
+	@RequestMapping(method=RequestMethod.POST, path="/role/id")
+	public @ResponseBody ResponseEntity<String> getRoleId(@RequestHeader("Authorization") String authorizationHeader, @RequestBody UserAndGroupWrapper userAndGroupWrapper) {
+		if (null == userAndGroupWrapper.getUserId())
+			return new ResponseEntity<String>("No userId!", HttpStatus.UNAUTHORIZED);
+		if (null == userAndGroupWrapper.getGroupId())
+			return new ResponseEntity<String>("No groupId!", HttpStatus.UNAUTHORIZED);
+		int roleId = ugrRepository.getRoleIdByUserIdGroupId(userAndGroupWrapper.getUserId(), userAndGroupWrapper.getGroupId());
+		if (-1 == roleId)
+			return new ResponseEntity<String>("Cannot retrieve roleId!", HttpStatus.UNAUTHORIZED);
+		else
+			return new ResponseEntity<String>("{roleId:" + roleId + "}", HttpStatus.ACCEPTED);
+	}	
+	
+	// API 6 - last part
+	@CrossOrigin
+	@RequestMapping(method=RequestMethod.POST, path="/group/adduser")
+	public @ResponseBody ResponseEntity<String> addUserToGroup(@RequestHeader("Authorization") String authorizationHeader, @RequestBody UserGroupRole userGroupRole) {
+		ugrRepository.add(userGroupRole);
+		return new ResponseEntity<String>("User added successfully!", HttpStatus.ACCEPTED);
+	}	
+	
+	// API 7 - last part
+	@CrossOrigin
+	@RequestMapping(method=RequestMethod.POST, path="/group/edit")
+	public @ResponseBody ResponseEntity<String> editGroup(@RequestHeader("Authorization") String authorizationHeader, @RequestBody KazanGroup kazanGroup) {
+		KazanGroup checkGroup = groupRepository.getGroupById(kazanGroup.getGroupId());
+		if (null == checkGroup) {
+			return new ResponseEntity<String>("There is no such group to update!", HttpStatus.UNAUTHORIZED);
+		} else {
+			kazanGroup.setGroupName(checkGroup.getGroupName());
+			groupRepository.update(kazanGroup);
+			return new ResponseEntity<String>("Group updated successfully!", HttpStatus.ACCEPTED);
+		}
+	}		
+	
+	// API 8 - last part
+	@CrossOrigin
+	@RequestMapping(method=RequestMethod.POST, path="/group/editrole")
+	public @ResponseBody ResponseEntity<String> editRoleOfUser(@RequestHeader("Authorization") String authorizationHeader, @RequestBody UserGroupRole userGroupRole) {
+		if (null == userGroupRole.getUserId())
+			return new ResponseEntity<String>("No userId!", HttpStatus.UNAUTHORIZED);
+		if (null == userGroupRole.getGroupId())
+			return new ResponseEntity<String>("No groupId!", HttpStatus.UNAUTHORIZED);
+		int roleId = ugrRepository.getRoleIdByUserIdGroupId(userGroupRole.getUserId(), userGroupRole.getGroupId());
+		if (1 == roleId)
+			return new ResponseEntity<String>("Group creator cannot change role!!!", HttpStatus.UNAUTHORIZED);
+		else {
+			ugrRepository.update(userGroupRole);
+			return new ResponseEntity<String>("Group role changed successfully!", HttpStatus.ACCEPTED);
+		}
+	}
+	
 }

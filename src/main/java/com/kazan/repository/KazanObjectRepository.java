@@ -9,46 +9,55 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.kazan.model.ObjectMaster;
+import com.kazan.model.KazanObject;
 
 @Repository
-public class ObjectMasterRepository implements AbstractObjectRepository<ObjectMaster> {
+public class KazanObjectRepository {
 	
 	@Autowired
 	private SessionFactory sessionFactory;
 	
 	@SuppressWarnings("unchecked")
 	@Transactional
-	public List<ObjectMaster> getAll() {
-		return sessionFactory.getCurrentSession().createQuery("from ObjectMaster").list();
+	public List<KazanObject> getAll() {
+		return sessionFactory.getCurrentSession().createQuery("from KazanObject").list();
 	}
 
 	@Transactional
 	public int deleteBySymbol(String symbol) {
-		String hql = "delete from ObjectMaster where symbol= :symbolToDelete";
+		String hql = "delete from KazanObject where symbol= :symbolToDelete";
 		return sessionFactory.getCurrentSession().createQuery(hql).setString("symbolToDelete", symbol).executeUpdate();
 	}
 
 	@Transactional
+	public int deleteBySymbolGroup(String symbol, Integer groupId) {
+		String hql = "delete from KazanObject where symbol= :symbolToDelete and group_id = :groupIdToDelete";
+		return sessionFactory.getCurrentSession().createQuery(hql)
+				.setString("symbolToDelete", symbol).setInteger("groupIdToDelete", groupId)
+				.executeUpdate();
+	}
+
+	@Transactional
 	public int deleteBySymbolUserGroup(String symbol, Integer userId, Integer groupId) {
-		String hql = "delete from ObjectMaster where symbol= :symbolToDelete and user_id = :userIdToDelete and group_id = :groupIdToDelete";
+		String hql = "delete from KazanObject where symbol= :symbolToDelete and user_id = :userIdToDelete and group_id = :groupIdToDelete";
 		return sessionFactory.getCurrentSession().createQuery(hql)
 				.setString("symbolToDelete", symbol).setInteger("userIdToDelete", userId).setInteger("groupIdToDelete", groupId)
 				.executeUpdate();
 	}
 
 	@Transactional
-	public int deleteBySymbolGroup(String symbol, Integer groupId) {
-		String hql = "delete from ObjectMaster where symbol= :symbolToDelete and group_id = :groupIdToDelete";
+	public int deleteBySymbolUserGroupMode(String symbol, Integer userId, Integer groupId, Integer modeId) {
+		String hql = "delete from KazanObject where symbol= :symbolToDelete and user_id = :userIdToDelete and group_id = :groupIdToDelete and mode_id = :modeIdToDelete";
 		return sessionFactory.getCurrentSession().createQuery(hql)
-				.setString("symbolToDelete", symbol).setInteger("groupIdToDelete", groupId)
+				.setString("symbolToDelete", symbol).setInteger("userIdToDelete", userId)
+				.setInteger("groupIdToDelete", groupId).setInteger("modeIdToDelete", modeId)
 				.executeUpdate();
 	}
 
 	@SuppressWarnings("unchecked")
 	@Transactional
-	public List<ObjectMaster> getBySymbolUserGroup(String symbol, Integer userId, Integer groupId) {
-		Query query = sessionFactory.getCurrentSession().createQuery("from ObjectMaster where symbol = :symbolToSelect and user_id = :userIdToSelect and group_id = :groupIdToSelect ");
+	public List<KazanObject> getBySymbolUserGroup(String symbol, Integer userId, Integer groupId) {
+		Query query = sessionFactory.getCurrentSession().createQuery("from KazanObject where symbol = :symbolToSelect and user_id = :userIdToSelect and group_id = :groupIdToSelect ");
 		query.setString("symbolToSelect", symbol);
 		query.setInteger("userIdToSelect", userId);
 		query.setInteger("groupIdToSelect", groupId);
@@ -57,15 +66,15 @@ public class ObjectMasterRepository implements AbstractObjectRepository<ObjectMa
 
 	@SuppressWarnings("unchecked")
 	@Transactional
-	public List<ObjectMaster> getBySymbolGroup(String symbol, Integer userId, Integer groupId) {
-		Query query = sessionFactory.getCurrentSession().createQuery("from ObjectMaster where symbol = :symbolToSelect and group_id = :groupIdToSelect ");
+	public List<KazanObject> getBySymbolGroup(String symbol, Integer userId, Integer groupId) {
+		Query query = sessionFactory.getCurrentSession().createQuery("from KazanObject where symbol = :symbolToSelect and group_id = :groupIdToSelect ");
 		query.setString("symbolToSelect", symbol);
 		query.setInteger("groupIdToSelect", groupId);
 		return query.list();
 	}
 
 	@Transactional
-	public ObjectMaster add(ObjectMaster t) {
+	public KazanObject add(KazanObject t) {
 		sessionFactory.getCurrentSession().persist(t);
 		sessionFactory.getCurrentSession().flush();
 		return t;
@@ -74,7 +83,7 @@ public class ObjectMasterRepository implements AbstractObjectRepository<ObjectMa
 	@Transactional
 	public String [][] getUserIdAndUpdateTime(String symbol, Integer groupId) {
 		SQLQuery query = sessionFactory.getCurrentSession().createSQLQuery("SELECT u.username, (o.updated_date - to_date('1970-01-01', 'YYYY-MM-DD')) * 86400000"
-																			+ " FROM object_master o JOIN users u on o.user_id = u.user_id"
+																			+ " FROM object o JOIN users u on o.user_id = u.user_id"
 																			+ " WHERE o.group_id = " + groupId + " and o.symbol = '" + symbol + "'"
 																			+ " GROUP BY o.updated_date, o.user_id, u.username"
 																			+ " ORDER BY o.updated_date desc");

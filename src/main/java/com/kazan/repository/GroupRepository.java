@@ -18,6 +18,19 @@ public class GroupRepository {
 	private SessionFactory sessionFactory;
 	
 	@Transactional
+	public int getCreatorByGroupId(int groupId) {
+		try {
+			Query query = sessionFactory.getCurrentSession().createQuery("from KazanGroup where group_id = :groupIdToSelect");
+			query.setParameter("groupIdToSelect", groupId);
+			KazanGroup result = (KazanGroup) query.uniqueResult();
+			return result.getCreator();
+		} catch (Exception e) {
+			System.out.println("GroupRepository.getCreatorByUserGroup:" + e);
+			return -1;
+		}
+	}
+	
+	@Transactional
 	public KazanGroup getGroupById(int groupId) {
 		try {
 			Query query = sessionFactory.getCurrentSession().createQuery("from KazanGroup where group_id = :groupIdToSelect");
@@ -28,7 +41,7 @@ public class GroupRepository {
 				return new KazanGroup();
 			else
 				return result;
-		} catch (Exception e) {		
+		} catch (Exception e) {
 			System.out.println("GroupRepository.getGroupById:" + e);
 			return new KazanGroup();
 		}
@@ -66,6 +79,12 @@ public class GroupRepository {
 	public KazanGroup add(KazanGroup kazanGroup) {
 		sessionFactory.getCurrentSession().persist(kazanGroup);
 		sessionFactory.getCurrentSession().flush();
+		return kazanGroup;
+	}
+
+	@Transactional
+	public KazanGroup update(KazanGroup kazanGroup) {
+		sessionFactory.getCurrentSession().merge(kazanGroup);
 		return kazanGroup;
 	}
 }
