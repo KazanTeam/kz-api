@@ -8,8 +8,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.kazan.model.KazanUser;
 
-import vn.vnptnet.oss.model.entity.Province;
-
 @Repository
 public class UserRepository {
 	

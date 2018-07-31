@@ -14,8 +14,6 @@ import org.springframework.core.env.Environment;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
-import java.net.InetAddress;
-
 @Configuration
 @EnableAutoConfiguration
 @ComponentScan(basePackages = { "com.kazan" })
@@ -37,5 +35,5 @@ public class Application {
 	@Bean  
 	public SessionFactory sessionFactory(HibernateEntityManagerFactory hemf){  
 	    return hemf.getSessionFactory();  
-	} 
+	}
 }

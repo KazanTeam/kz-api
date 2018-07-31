@@ -56,11 +56,12 @@ public class KazanObjectRepository {
 
 	@SuppressWarnings("unchecked")
 	@Transactional
-	public List<KazanObject> getBySymbolUserGroup(String symbol, Integer userId, Integer groupId) {
-		Query query = sessionFactory.getCurrentSession().createQuery("from KazanObject where symbol = :symbolToSelect and user_id = :userIdToSelect and group_id = :groupIdToSelect ");
+	public List<KazanObject> getBySymbolUserGroup(String symbol, Integer userId, Integer groupId, Integer modeId) {
+		Query query = sessionFactory.getCurrentSession().createQuery("from KazanObject where symbol = :symbolToSelect and user_id = :userIdToSelect and group_id = :groupIdToSelect and mode_id =:modeIdToSelect");
 		query.setString("symbolToSelect", symbol);
 		query.setInteger("userIdToSelect", userId);
 		query.setInteger("groupIdToSelect", groupId);
+		query.setInteger("modeIdToSelect", modeId);
 		return query.list();
 	}
 
@@ -81,11 +82,11 @@ public class KazanObjectRepository {
 	}
 	
 	@Transactional
-	public String [][] getUserIdAndUpdateTime(String symbol, Integer groupId) {
-		SQLQuery query = sessionFactory.getCurrentSession().createSQLQuery("SELECT u.username, (o.updated_date - to_date('1970-01-01', 'YYYY-MM-DD')) * 86400000"
+	public String [][] getUserIdAndUpdateTime(String symbol, Integer groupId, Integer roleId) {
+		SQLQuery query = sessionFactory.getCurrentSession().createSQLQuery("SELECT o.mode_id, u.username, (o.updated_date - to_date('1970-01-01', 'YYYY-MM-DD')) * 86400000"
 																			+ " FROM object o JOIN users u on o.user_id = u.user_id"
-																			+ " WHERE o.group_id = " + groupId + " and o.symbol = '" + symbol + "'"
-																			+ " GROUP BY o.updated_date, o.user_id, u.username"
+																			+ " WHERE o.group_id = " + groupId + "and o.mode_id >= "+roleId+" and o.symbol = '" + symbol + "'"
+																			+ " GROUP BY o.updated_date, o.user_id, u.username, o.mode_id"
 																			+ " ORDER BY o.updated_date desc");
 		List<Object> queryResult = query.list();
 		String [][] userUpdate = new String [queryResult.size()][2];
