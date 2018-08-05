@@ -89,7 +89,7 @@ public class KazanObjectRepository {
 																			+ " GROUP BY o.updated_date, o.user_id, u.username, o.mode_id"
 																			+ " ORDER BY o.updated_date desc");
 		List<Object> queryResult = query.list();
-		String [][] userUpdate = new String [queryResult.size()][2];
+		String [][] userUpdate = new String [queryResult.size()][3];
 		for (int i = 0; i < queryResult.size(); i++) {
 			Object [] record = (Object []) queryResult.get(i);
 			userUpdate[i][0] = record[0].toString();
