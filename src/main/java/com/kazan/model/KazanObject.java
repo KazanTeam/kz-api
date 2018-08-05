@@ -102,6 +102,66 @@ public class KazanObject {
 	@Column(name = "objprop_levelwidth")
 	private Integer objprop_levelwidth;
 
+	@Column(name = "objprop_levelvalue_1")
+	private Integer objprop_levelvalue_1;
+
+	@Column(name = "objprop_levelvalue_2")
+	private Integer objprop_levelvalue_2;
+
+	@Column(name = "objprop_levelvalue_3")
+	private Integer objprop_levelvalue_3;
+
+	@Column(name = "objprop_levelvalue_4")
+	private Integer objprop_levelvalue_4;
+
+	@Column(name = "objprop_levelvalue_5")
+	private Integer objprop_levelvalue_5;
+
+	@Column(name = "objprop_levelvalue_6")
+	private Integer objprop_levelvalue_6;
+
+	@Column(name = "objprop_levelvalue_7")
+	private Integer objprop_levelvalue_7;
+
+	@Column(name = "objprop_levelvalue_8")
+	private Integer objprop_levelvalue_8;
+
+	@Column(name = "objprop_levelvalue_9")
+	private Integer objprop_levelvalue_9;
+
+	@Column(name = "objprop_levelvalue_10")
+	private Integer objprop_levelvalue_10;
+
+	@Column(name = "objprop_leveltext_1")
+	private String objprop_leveltext_1;
+
+	@Column(name = "objprop_leveltext_2")
+	private String objprop_leveltext_2;
+
+	@Column(name = "objprop_leveltext_3")
+	private String objprop_leveltext_3;
+
+	@Column(name = "objprop_leveltext_4")
+	private String objprop_leveltext_4;
+
+	@Column(name = "objprop_leveltext_5")
+	private String objprop_leveltext_5;
+
+	@Column(name = "objprop_leveltext_6")
+	private String objprop_leveltext_6;
+
+	@Column(name = "objprop_leveltext_7")
+	private String objprop_leveltext_7;
+
+	@Column(name = "objprop_leveltext_8")
+	private String objprop_leveltext_8;
+
+	@Column(name = "objprop_leveltext_9")
+	private String objprop_leveltext_9;
+
+	@Column(name = "objprop_leveltext_10")
+	private String objprop_leveltext_10;
+
 	@Column(name = "updated_date")
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date updated_date;
@@ -424,6 +484,7 @@ public class KazanObject {
 		this.modeId = modeId;
 	}
 
+	@JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
 	public Integer getObjprop_levels() {
 		return objprop_levels;
 	}
@@ -432,6 +493,7 @@ public class KazanObject {
 		this.objprop_levels = objprop_levels;
 	}
 
+	@JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
 	public Integer getObjprop_bgcolor() {
 		return objprop_bgcolor;
 	}
@@ -440,6 +502,7 @@ public class KazanObject {
 		this.objprop_bgcolor = objprop_bgcolor;
 	}
 
+	@JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
 	public Integer getObjprop_border_type() {
 		return objprop_border_type;
 	}
@@ -448,6 +511,7 @@ public class KazanObject {
 		this.objprop_border_type = objprop_border_type;
 	}
 
+	@JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
 	public Integer getObjprop_border_color() {
 		return objprop_border_color;
 	}
@@ -456,6 +520,7 @@ public class KazanObject {
 		this.objprop_border_color = objprop_border_color;
 	}
 
+	@JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
 	public Integer getObjprop_ray() {
 		return objprop_ray;
 	}
@@ -464,12 +529,193 @@ public class KazanObject {
 		this.objprop_ray = objprop_ray;
 	}
 
+	@JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
 	public String getObjprop_name() {
 		return objprop_name;
 	}
 
 	public void setObjprop_name(String objprop_name) {
 		this.objprop_name = objprop_name;
+	}
+
+	@JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
+	public Integer getObjprop_levelvalue_1() {
+		return objprop_levelvalue_1;
+	}
+
+	public void setObjprop_levelvalue_1(Integer objprop_levelvalue_1) {
+		this.objprop_levelvalue_1 = objprop_levelvalue_1;
+	}
+
+	@JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
+	public Integer getObjprop_levelvalue_2() {
+		return objprop_levelvalue_2;
+	}
+
+	public void setObjprop_levelvalue_2(Integer objprop_levelvalue_2) {
+		this.objprop_levelvalue_2 = objprop_levelvalue_2;
+	}
+
+	@JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
+	public Integer getObjprop_levelvalue_3() {
+		return objprop_levelvalue_3;
+	}
+
+	public void setObjprop_levelvalue_3(Integer objprop_levelvalue_3) {
+		this.objprop_levelvalue_3 = objprop_levelvalue_3;
+	}
+
+	@JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
+	public Integer getObjprop_levelvalue_4() {
+		return objprop_levelvalue_4;
+	}
+
+	public void setObjprop_levelvalue_4(Integer objprop_levelvalue_4) {
+		this.objprop_levelvalue_4 = objprop_levelvalue_4;
+	}
+
+	@JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
+	public Integer getObjprop_levelvalue_5() {
+		return objprop_levelvalue_5;
+	}
+
+	public void setObjprop_levelvalue_5(Integer objprop_levelvalue_5) {
+		this.objprop_levelvalue_5 = objprop_levelvalue_5;
+	}
+
+	@JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
+	public Integer getObjprop_levelvalue_6() {
+		return objprop_levelvalue_6;
+	}
+
+	public void setObjprop_levelvalue_6(Integer objprop_levelvalue_6) {
+		this.objprop_levelvalue_6 = objprop_levelvalue_6;
+	}
+
+	@JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
+	public Integer getObjprop_levelvalue_7() {
+		return objprop_levelvalue_7;
+	}
+
+	public void setObjprop_levelvalue_7(Integer objprop_levelvalue_7) {
+		this.objprop_levelvalue_7 = objprop_levelvalue_7;
+	}
+
+	@JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
+	public Integer getObjprop_levelvalue_8() {
+		return objprop_levelvalue_8;
+	}
+
+	public void setObjprop_levelvalue_8(Integer objprop_levelvalue_8) {
+		this.objprop_levelvalue_8 = objprop_levelvalue_8;
+	}
+
+	@JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
+	public Integer getObjprop_levelvalue_9() {
+		return objprop_levelvalue_9;
+	}
+
+	public void setObjprop_levelvalue_9(Integer objprop_levelvalue_9) {
+		this.objprop_levelvalue_9 = objprop_levelvalue_9;
+	}
+
+	@JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
+	public Integer getObjprop_levelvalue_10() {
+		return objprop_levelvalue_10;
+	}
+
+	public void setObjprop_levelvalue_10(Integer objprop_levelvalue_10) {
+		this.objprop_levelvalue_10 = objprop_levelvalue_10;
+	}
+
+	@JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
+	public String getObjprop_leveltext_1() {
+		return objprop_leveltext_1;
+	}
+
+	public void setObjprop_leveltext_1(String objprop_leveltext_1) {
+		this.objprop_leveltext_1 = objprop_leveltext_1;
+	}
+
+	@JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
+	public String getObjprop_leveltext_2() {
+		return objprop_leveltext_2;
+	}
+
+	public void setObjprop_leveltext_2(String objprop_leveltext_2) {
+		this.objprop_leveltext_2 = objprop_leveltext_2;
+	}
+
+	@JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
+	public String getObjprop_leveltext_3() {
+		return objprop_leveltext_3;
+	}
+
+	public void setObjprop_leveltext_3(String objprop_leveltext_3) {
+		this.objprop_leveltext_3 = objprop_leveltext_3;
+	}
+
+	@JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
+	public String getObjprop_leveltext_4() {
+		return objprop_leveltext_4;
+	}
+
+	public void setObjprop_leveltext_4(String objprop_leveltext_4) {
+		this.objprop_leveltext_4 = objprop_leveltext_4;
+	}
+
+	@JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
+	public String getObjprop_leveltext_5() {
+		return objprop_leveltext_5;
+	}
+
+	public void setObjprop_leveltext_5(String objprop_leveltext_5) {
+		this.objprop_leveltext_5 = objprop_leveltext_5;
+	}
+
+	@JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
+	public String getObjprop_leveltext_6() {
+		return objprop_leveltext_6;
+	}
+
+	public void setObjprop_leveltext_6(String objprop_leveltext_6) {
+		this.objprop_leveltext_6 = objprop_leveltext_6;
+	}
+
+	@JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
+	public String getObjprop_leveltext_7() {
+		return objprop_leveltext_7;
+	}
+
+	public void setObjprop_leveltext_7(String objprop_leveltext_7) {
+		this.objprop_leveltext_7 = objprop_leveltext_7;
+	}
+
+	@JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
+	public String getObjprop_leveltext_8() {
+		return objprop_leveltext_8;
+	}
+
+	public void setObjprop_leveltext_8(String objprop_leveltext_8) {
+		this.objprop_leveltext_8 = objprop_leveltext_8;
+	}
+
+	@JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
+	public String getObjprop_leveltext_9() {
+		return objprop_leveltext_9;
+	}
+
+	public void setObjprop_leveltext_9(String objprop_leveltext_9) {
+		this.objprop_leveltext_9 = objprop_leveltext_9;
+	}
+
+	@JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
+	public String getObjprop_leveltext_10() {
+		return objprop_leveltext_10;
+	}
+
+	public void setObjprop_leveltext_10(String objprop_leveltext_10) {
+		this.objprop_leveltext_10 = objprop_leveltext_10;
 	}
 
 	@Override
