@@ -82,7 +82,7 @@ public class KazanObjectRepository {
 	}
 	
 	@Transactional
-	public String [][] getUserIdAndUpdateTime(String symbol, Integer groupId, Integer roleId) {
+	public String [][] getModeIdUsernameAndUpdateTime(String symbol, Integer groupId, Integer roleId) {
 		SQLQuery query = sessionFactory.getCurrentSession().createSQLQuery("SELECT o.mode_id, u.username, (o.updated_date - to_date('1970-01-01', 'YYYY-MM-DD')) * 86400000"
 																			+ " FROM object o JOIN users u on o.user_id = u.user_id"
 																			+ " WHERE o.group_id = " + groupId + "and o.mode_id >= "+roleId+" and o.symbol = '" + symbol + "'"
@@ -94,6 +94,7 @@ public class KazanObjectRepository {
 			Object [] record = (Object []) queryResult.get(i);
 			userUpdate[i][0] = record[0].toString();
 			userUpdate[i][1] = record[1].toString();
+			userUpdate[i][2] = record[2].toString();
 		}
 		return userUpdate;
 	}

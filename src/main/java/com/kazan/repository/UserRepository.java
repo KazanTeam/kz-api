@@ -1,11 +1,15 @@
 package com.kazan.repository;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.hibernate.Query;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.kazan.model.KazanGroup;
 import com.kazan.model.KazanUser;
 
 @Repository
@@ -48,6 +52,24 @@ public class UserRepository {
 		Query query = sessionFactory.getCurrentSession().createQuery("from KazanUser where username = :usernameToSelect ");
 		query.setParameter("usernameToSelect", username);
 		return (KazanUser) query.uniqueResult();
+	}
+	
+	@Transactional
+	public List<KazanUser> getUserByIdList(List<Integer> userIds) {
+		if (null == userIds || 0 == userIds.size())
+			return new ArrayList<KazanUser>();
+		try {
+			Query query = sessionFactory.getCurrentSession().createQuery("from KazanUser where user_id in (:userIdListToSelect)");
+			query.setParameterList("userIdListToSelect", userIds);
+			List<KazanUser> result = query.list();
+			if (null == result)
+				return new ArrayList<KazanUser>();
+			else
+				return result;
+		} catch (Exception e) {		
+			System.out.println("UserRepository.getUserByIdList:" + e);
+			return new ArrayList<KazanUser>();
+		}
 	}
 	
 	@Transactional

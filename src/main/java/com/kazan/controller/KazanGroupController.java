@@ -2,12 +2,14 @@ package com.kazan.controller;
 
 import java.io.IOException;
 import java.util.Date;
+import java.util.List;
 
 import org.apache.commons.codec.binary.Base64;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,6 +21,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kazan.component.TelegramSendGroups;
 import com.kazan.model.KazanGroup;
+import com.kazan.model.KazanUser;
 import com.kazan.model.UserGroupRole;
 import com.kazan.repository.GroupRepository;
 import com.kazan.repository.KazanObjectRepository;
@@ -197,6 +200,52 @@ public class KazanGroupController {
 				return new ResponseEntity<String>("User left group successfully!", HttpStatus.UNAUTHORIZED);
 			else
 				return new ResponseEntity<String>("No user left group!!!", HttpStatus.UNAUTHORIZED);
+		}
+	}
+	
+	// new API
+	@CrossOrigin
+	@RequestMapping(method = RequestMethod.POST, path = "/group/listall/{groupId}")
+	public @ResponseBody ResponseEntity<String> getAllUsersFromGroup(@PathVariable("groupId") int groupId) {
+		if (groupId < 1) {
+			return new ResponseEntity<String>("Invalid groupId!!!", HttpStatus.UNAUTHORIZED);
+		} else {
+			List<Integer> userIdList = ugrRepository.getUserIdListByGroupId(groupId);
+			List<KazanUser> kazanUserList = userRepository.getUserByIdList(userIdList);
+			if (null == kazanUserList || 0 == kazanUserList.size()) {
+				return new ResponseEntity<String>("No user in this group!!!", HttpStatus.UNAUTHORIZED);
+			} else {
+				try {
+					return new ResponseEntity<String>(new ObjectMapper().writeValueAsString(kazanUserList), HttpStatus.ACCEPTED);
+				} catch (JsonProcessingException e) {
+					System.out.println("KazanGroupController.getAllUsersFromGroup:" + e);
+					return new ResponseEntity<String>("Error parsing object!", HttpStatus.UNAUTHORIZED);
+				}
+			}
+		}
+	}
+	
+	// new API
+	@CrossOrigin
+	@RequestMapping(method = RequestMethod.POST, path = "/group/listall/{groupId}/{roleId}")
+	public @ResponseBody ResponseEntity<String> getAllUsersFromGroupAndRole(@PathVariable("groupId") int groupId, @PathVariable("roleId") int roleId) {
+		if (groupId < 1) {
+			return new ResponseEntity<String>("Invalid groupId!!!", HttpStatus.UNAUTHORIZED);
+		} else if (roleId < 1) {
+			return new ResponseEntity<String>("Invalid roleId!!!", HttpStatus.UNAUTHORIZED);
+		} else {
+			List<Integer> userIdList = ugrRepository.getUserIdListByGroupIdRoleId(groupId, roleId);
+			List<KazanUser> kazanUserList = userRepository.getUserByIdList(userIdList);
+			if (null == kazanUserList || 0 == kazanUserList.size()) {
+				return new ResponseEntity<String>("No user in this group with such role!!!", HttpStatus.UNAUTHORIZED);
+			} else {
+				try {
+					return new ResponseEntity<String>(new ObjectMapper().writeValueAsString(kazanUserList), HttpStatus.ACCEPTED);
+				} catch (JsonProcessingException e) {
+					System.out.println("KazanGroupController.getAllUsersFromGroupAndRole:" + e);
+					return new ResponseEntity<String>("Error parsing object!", HttpStatus.UNAUTHORIZED);
+				}
+			}
 		}
 	}
 }

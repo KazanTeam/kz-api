@@ -114,6 +114,31 @@ public class UserGroupRoleRepository {
 	}
 	
 	@Transactional
+	public List<Integer> getUserIdListByGroupId(int groupId) {
+		Query query = sessionFactory.getCurrentSession().createQuery("select distinct userId from UserGroupRole where groupId = :groupIdToSelect ");
+		query.setParameter("groupIdToSelect", groupId);
+		List<Integer> result = query.list();
+		if (null == result)
+			return new ArrayList<Integer>();
+		else {
+			return result;
+		}		
+	}
+	
+	@Transactional
+	public List<Integer> getUserIdListByGroupIdRoleId(int groupId, int roleId) {
+		Query query = sessionFactory.getCurrentSession().createQuery("select distinct userId from UserGroupRole where groupId = :groupIdToSelect and roleId = :roleIdToSelect ");
+		query.setParameter("groupIdToSelect", groupId);
+		query.setParameter("roleIdToSelect", roleId);
+		List<Integer> result = query.list();
+		if (null == result)
+			return new ArrayList<Integer>();
+		else {
+			return result;
+		}		
+	}
+	
+	@Transactional
 	public List<Integer> getUserIdByGroupIdAndMode(int groupId, int mode) {
 		try {
 			Query query = sessionFactory.getCurrentSession().createQuery("from UserGroupRole where groupId = :groupIdToSelect and roleId <= :modeToSelect ");

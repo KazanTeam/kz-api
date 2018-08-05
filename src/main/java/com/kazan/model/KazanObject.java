@@ -118,6 +118,26 @@ public class KazanObject {
 	@Column(name = "mode_id")
 	private Integer modeId;
 	
+	// OBJPROP_LEVELS, OBJPROP_BGCOLOR, OBJPROP_BORDER_TYPE, OBJPROP_BORDER_COLOR, OBJPROP_RAY, OBJPROP_NAME
+
+	@Column(name = "objprop_levels")
+	private Integer objprop_levels;
+
+	@Column(name = "objprop_bgcolor")
+	private Integer objprop_bgcolor;
+
+	@Column(name = "objprop_border_type")
+	private Integer objprop_border_type;
+
+	@Column(name = "objprop_border_color")
+	private Integer objprop_border_color;
+
+	@Column(name = "objprop_ray")
+	private Integer objprop_ray;
+
+	@Column(name = "objprop_name")
+	private String objprop_name;
+	
 	public Integer getObjprop_timeframes() {
 		return objprop_timeframes;
 	}
@@ -402,6 +422,54 @@ public class KazanObject {
 
 	public void setModeId(Integer modeId) {
 		this.modeId = modeId;
+	}
+
+	public Integer getObjprop_levels() {
+		return objprop_levels;
+	}
+
+	public void setObjprop_levels(Integer objprop_levels) {
+		this.objprop_levels = objprop_levels;
+	}
+
+	public Integer getObjprop_bgcolor() {
+		return objprop_bgcolor;
+	}
+
+	public void setObjprop_bgcolor(Integer objprop_bgcolor) {
+		this.objprop_bgcolor = objprop_bgcolor;
+	}
+
+	public Integer getObjprop_border_type() {
+		return objprop_border_type;
+	}
+
+	public void setObjprop_border_type(Integer objprop_border_type) {
+		this.objprop_border_type = objprop_border_type;
+	}
+
+	public Integer getObjprop_border_color() {
+		return objprop_border_color;
+	}
+
+	public void setObjprop_border_color(Integer objprop_border_color) {
+		this.objprop_border_color = objprop_border_color;
+	}
+
+	public Integer getObjprop_ray() {
+		return objprop_ray;
+	}
+
+	public void setObjprop_ray(Integer objprop_ray) {
+		this.objprop_ray = objprop_ray;
+	}
+
+	public String getObjprop_name() {
+		return objprop_name;
+	}
+
+	public void setObjprop_name(String objprop_name) {
+		this.objprop_name = objprop_name;
 	}
 
 	@Override

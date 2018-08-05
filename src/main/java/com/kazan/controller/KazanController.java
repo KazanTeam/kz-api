@@ -166,10 +166,10 @@ public class KazanController {
 				}
 				int mode_id = wrapperObject.getMode();
 				if(-1 == getFromUserId) {
-					String[][] userUpdate = kazanObjectRepository.getUserIdAndUpdateTime(wrapperObject.getSymbol(), groupId, roleId);
+					String[][] userUpdate = kazanObjectRepository.getModeIdUsernameAndUpdateTime(wrapperObject.getSymbol(), groupId, roleId);
 					if (userUpdate.length > 0 && userUpdate[0].length > 0){
- 						getFromUserId = userRepository.getIdByUsername(userUpdate[0][0]);
-						mode_id = Integer.parseInt(userUpdate[0][1]); // lay userId và mode cua user cuoi cung
+						mode_id = Integer.parseInt(userUpdate[0][0]); // lay userId và mode cua user cuoi cung
+ 						getFromUserId = userRepository.getIdByUsername(userUpdate[0][1]);
 					}
 				}
 				
@@ -216,7 +216,7 @@ public class KazanController {
 		ObjectMapper mapper = new ObjectMapper();
 		try {
 			String[][] userObjects = null;
-			userObjects  = kazanObjectRepository.getUserIdAndUpdateTime(wrapperObject.getSymbol(), groupId, roleId);
+			userObjects  = kazanObjectRepository.getModeIdUsernameAndUpdateTime(wrapperObject.getSymbol(), groupId, roleId);
 			return new ResponseEntity<String>(mapper.writeValueAsString(userObjects), HttpStatus.ACCEPTED);
 		} catch (JsonProcessingException e) {
 			System.out.println("KazanController.getObject:" + e);
