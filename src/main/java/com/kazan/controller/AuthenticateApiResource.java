@@ -3,8 +3,6 @@ package com.kazan.controller;
 import com.kazan.dto.ResponseDto;
 import com.kazan.dto.UserDto;
 import com.kazan.service.UserService;
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
