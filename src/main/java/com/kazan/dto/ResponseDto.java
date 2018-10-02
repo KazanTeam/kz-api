@@ -8,6 +8,8 @@ public class ResponseDto<T> {
 
     private T content;
 
+    private Long totalRecord;
+
     public String getErrorCode() {
         return errorCode;
     }
@@ -30,5 +32,13 @@ public class ResponseDto<T> {
 
     public void setContent(T content) {
         this.content = content;
+    }
+
+    public Long getTotalRecord() {
+        return totalRecord;
+    }
+
+    public void setTotalRecord(Long totalRecord) {
+        this.totalRecord = totalRecord;
     }
 }

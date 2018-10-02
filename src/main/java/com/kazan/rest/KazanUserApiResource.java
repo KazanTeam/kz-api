@@ -14,11 +14,10 @@ import org.springframework.web.bind.annotation.*;
 public class KazanUserApiResource {
 
     @Autowired
-    private KazanUserService kazanUserService;
+    KazanUserService kazanUserService;
 
     @RequestMapping(method= RequestMethod.POST, path="/user")
-    public ResponseEntity<ResponseDto<KazanUserDto>> createUser(
-            @RequestBody KazanUserDto kazanUserDto) {
+    public ResponseEntity<ResponseDto<KazanUserDto>> createUser(@RequestBody KazanUserDto kazanUserDto) {
         ResponseDto<KazanUserDto> response = new ResponseDto<>();
 
         response.setContent(kazanUserService.createUser(kazanUserDto));
@@ -27,8 +26,7 @@ public class KazanUserApiResource {
     }
 
     @RequestMapping(method= RequestMethod.PUT, path="/user")
-    public ResponseEntity<ResponseDto<KazanUserDto>> updateUser(
-            @RequestBody KazanUserDto kazanUserDto) {
+    public ResponseEntity<ResponseDto<KazanUserDto>> updateUser(@RequestBody KazanUserDto kazanUserDto) {
         ResponseDto<KazanUserDto> response = new ResponseDto<>();
 
         if (kazanUserService.findById(kazanUserDto.getUserId()) == null) {
