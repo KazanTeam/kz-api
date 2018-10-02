@@ -51,7 +51,6 @@ public class KazanGroupApiResource {
         }
 
         KazanGroup kazanGroup = KazanGroupMapping.dtoToEntity(kazanGroupDto);
-        kazanGroup.setGroupName(kazanGroupExist.getGroupName());
 
         response.setContent(kazanGroupService.edit(kazanGroup));
 
