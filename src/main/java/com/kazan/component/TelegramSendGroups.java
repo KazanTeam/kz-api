@@ -29,8 +29,8 @@ public class TelegramSendGroups {
 	@Autowired
 	private GroupRepository groupRepository;
 	
-	@Autowired
-	private TelegramSender telegramSender;
+//	@Autowired
+//	private TelegramSender telegramSender;
 	
 	
 	public void sendMessage(List<Integer> groupIds, int mode, int TelegramBotType, String content, String  note, String imageUrl) {
@@ -83,7 +83,7 @@ public class TelegramSendGroups {
 		        sendedContent+= System.lineSeparator() + System.lineSeparator() + message.getImageUrl();
 		    }
 			
-			telegramSender.sendMessage(message.getTelegramTokenBot(), message.getTelegramId().toString(), sendedContent);
+//			telegramSender.sendMessage(message.getTelegramTokenBot(), message.getTelegramId().toString(), sendedContent);
 			System.out.println("send to "+ message.getTelegramId() +"by "+ message.getTelegramTokenBot()+" message :"+sendedContent);
 			
 		}
